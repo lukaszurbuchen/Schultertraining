@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f6feb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Schultertraining</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --ink:#1b1f24; --muted:#5f6b7a; --line:#e3e7ec;
+    --accent:#1f6feb; --accent-soft:#e7f0ff; --good:#1a7f37; --good-soft:#e6f4ea;
+    --warn:#b7791f; --warn-soft:#fdf3e1; --bad:#c62828; --bad-soft:#fdecea;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#0f1216; --card:#181c22; --ink:#e8ebef; --muted:#9aa5b1; --line:#2a313a;
+      --accent:#58a6ff; --accent-soft:#132338; --good:#4ac26b; --good-soft:#12261a;
+      --warn:#e3b341; --warn-soft:#2b2313; --bad:#ff6b6b; --bad-soft:#2d1616; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);
+    padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+  header{padding:16px 16px 8px}
+  header h1{font-size:20px;margin:0}
+  header .sub{color:var(--muted);font-size:14px}
+  main{padding:0 12px;max-width:640px;margin:0 auto}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
+  .card h2{font-size:16px;margin:0 0 8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .muted{color:var(--muted);font-size:14px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .ex{border-top:1px solid var(--line);padding:10px 0}
+  .ex:first-of-type{border-top:0}
+  .ex-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+  .ex-name{font-weight:600}
+  .ex-name a{color:var(--accent);font-weight:400;font-size:14px;margin-left:6px;text-decoration:none}
+  .ex-dose{color:var(--muted);font-size:14px;white-space:nowrap}
+  .ex-hint{color:var(--muted);font-size:13px;margin-top:2px}
+  .sets{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center}
+  .set{width:44px;height:44px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--muted);font-weight:600;cursor:pointer}
+  .set.done{background:var(--good);border-color:var(--good);color:#fff}
+  .inp{display:flex;gap:6px;align-items:center;margin-left:auto}
+  .inp input{width:64px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:15px}
+  .inp label{font-size:12px;color:var(--muted)}
+  .prog{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:6px}
+  .prog > div{height:100%;background:var(--good);width:0;transition:width .2s}
+  .pain{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+  .pain button{width:34px;height:38px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-weight:600}
+  .pain button.on.g{background:var(--good);color:#fff;border-color:var(--good)}
+  .pain button.on.y{background:var(--warn);color:#fff;border-color:var(--warn)}
+  .pain button.on.r{background:var(--bad);color:#fff;border-color:var(--bad)}
+  .advice{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:14px}
+  .advice.g{background:var(--good-soft)} .advice.y{background:var(--warn-soft)} .advice.r{background:var(--bad-soft)}
+  textarea{width:100%;min-height:60px;border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg);color:var(--ink);font:inherit;margin-top:8px}
+  .btn{border:0;border-radius:10px;padding:10px 14px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer;font-size:15px}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  .banner{background:var(--accent-soft);border-radius:12px;padding:12px;margin:12px 0}
+  .banner .row{margin-top:8px}
+  nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+  nav button{flex:1;border:0;background:none;color:var(--muted);padding:12px 0 14px;font-size:14px;cursor:pointer}
+  nav button.on{color:var(--accent);font-weight:600}
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}
+  .cal .d{aspect-ratio:1;border-radius:6px;background:var(--line);font-size:11px;display:flex;align-items:flex-end;justify-content:flex-end;padding:3px;color:var(--muted);position:relative}
+  .cal .d.r{background:var(--accent-soft)}
+  .cal .d.k{background:var(--good);color:#fff}
+  .cal .d.today{outline:2px solid var(--accent)}
+  .cal .d .p{position:absolute;left:3px;top:3px;width:7px;height:7px;border-radius:50%}
+  .cal .hd{font-size:11px;color:var(--muted);text-align:center}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}
+  .legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px;background:var(--c)}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .stat{background:var(--bg);border-radius:10px;padding:10px;text-align:center}
+  .stat b{display:block;font-size:22px}
+  .stat span{font-size:12px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--muted);font-weight:500;font-size:12px}
+  .log-item{border-top:1px solid var(--line);padding:8px 0;font-size:14px}
+  .log-item:first-child{border-top:0}
+  .tag{display:inline-block;font-size:12px;border-radius:6px;padding:1px 6px;margin-right:4px;background:var(--bg);border:1px solid var(--line)}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}
+  ul.tight{margin:6px 0;padding-left:20px} ul.tight li{margin:3px 0}
+  svg text{fill:var(--muted);font-size:10px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>Schultertraining</h1>
+  <div class="sub" id="dateLine"></div>
+</header>
+<main>
+  <section id="view-today"></section>
+  <section id="view-history" class="hidden"></section>
+  <section id="view-info" class="hidden"></section>
+</main>
+<nav>
+  <button data-view="today" class="on">Heute</button>
+  <button data-view="history">Verlauf</button>
+  <button data-view="info">Regeln</button>
+</nav>
+
+<script>
+/* =========================================================
+   PLAN – hier kannst du Übungen, Sätze und Links anpassen.
+   sets: Anzahl Sätze · dose: Anzeige · input: 'kg' | 'reps' | 'kg+reps' | null
+   ========================================================= */
+const PLAN = {
+  R: { name: "Schulter-Reha", note: "täglich, ca. 8 Min.", ex: [
+    { id:"ar",  name:"Aussenrotation mit Band", sets:2, dose:"2×15 pro Seite", hint:"Ellbogen am Körper (Handtuch dazwischen)", url:"https://musclewiki.com/de-de/exercises/shoulders/recovery" },
+    { id:"pa",  name:"Band Pull-Apart / Face Pull", sets:2, dose:"2×15", hint:"Schulterblätter zusammen, Schultern tief", url:"https://musclewiki.com/de-de/exercise/band/male/shoulders/band-pull-apart" },
+    { id:"ws",  name:"Wall Slides", sets:2, dose:"2×10", hint:"Unterarme an der Wand nach oben schieben", url:"https://www.hingehealth.com/resources/articles/wall-slides" },
+    { id:"cb",  name:"Cross-Body Stretch", sets:2, dose:"2×30 s pro Seite", hint:"Am Oberarm ziehen, nicht am Ellbogen", url:"https://fitbod.me/exercises/cross-body-arm-stretch" },
+    { id:"iso", name:"Isometrische Aussenrotation", sets:5, dose:"5×30 s", hint:"Nur bei akuten Schmerzen – optional", url:"https://us.physitrack.com/home-exercise-video/isometric-shoulder-external-rotation-against-wall", optional:true }
+  ]},
+  A: { name: "Kraft A – Rücken/Ziehen", note: "ca. 25 Min.", ex: [
+    { id:"pu",  name:"Klimmzüge neutraler Griff", sets:3, dose:"3×5–8", hint:"Bei Schmerz: TRX-Rudern", url:"https://musclewiki.com/exercise/pull-ups", input:"reps" },
+    { id:"row", name:"Einarmiges KH-Rudern", sets:3, dose:"3×10 pro Seite", url:"https://musclewiki.com/exercise/dumbbell-single-arm-row", input:"kg" },
+    { id:"ty",  name:"TRX Y-Fly", sets:3, dose:"3×10, langsam", url:"https://musclewiki.com/exercise/trx-y-raise" },
+    { id:"ks",  name:"Kettlebell Swing", sets:3, dose:"3×15", url:"https://musclewiki.com/exercise/kettlebell-swing", input:"kg" },
+    { id:"kr",  name:"Hängendes Knieheben", sets:3, dose:"3×10", hint:"Zieht es: in der Dip-Station mit Unterarmstütz", url:"https://musclewiki.com/exercise/hanging-knee-raises" }
+  ]},
+  B: { name: "Kraft B – Drücken/Arme", note: "ca. 25 Min.", ex: [
+    { id:"fp",  name:"KH Floor Press neutraler Griff", sets:3, dose:"3×10", url:"https://fitbod.me/exercises/dumbbell-floor-press", input:"kg" },
+    { id:"pup", name:"Push-up Plus", sets:3, dose:"3×10", url:"https://physio-pedia.com/Push_Up_Plus_Exercise" },
+    { id:"sz",  name:"SZ-Curls", sets:3, dose:"3×10", url:"https://musclewiki.com/exercise/ez-bar-curl", input:"kg" },
+    { id:"tp",  name:"Trizeps-Pushdown mit Band", sets:3, dose:"3×12", url:"https://musclewiki.com/exercise/band-rapunzel-pushdown" },
+    { id:"fw",  name:"Farmer's Walk", sets:3, dose:"3×30–40 m", url:"https://musclewiki.com/exercise/dumbbell-farmer-walk", input:"kg" },
+    { id:"hg",  name:"Handgrip", sets:3, dose:"3× bis Ermüdung" }
+  ]}
+};
+
+/* ===================== Speicher ===================== */
+const KEY = "schultertraining.v1";
+let DB = load();
+function load(){
+  try { const d = JSON.parse(localStorage.getItem(KEY)); if (d && d.days) return d; } catch(e){}
+  return { days:{} };
+}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch(e){ alertBox("Speichern nicht möglich (Browser-Speicher gesperrt)."); } }
+
+/* ===================== Datum ===================== */
+const pad = n => String(n).padStart(2,"0");
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
+const addDays = (s, n) => { const d = parse(s); d.setDate(d.getDate()+n); return iso(d); };
+const TODAY = () => iso(new Date());
+const WD = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+const fmt = s => { const d = parse(s); return `${WD[d.getDay()]} ${d.getDate()}.${d.getMonth()+1}.`; };
+
+/* ===================== Logik ===================== */
+function day(date){
+  if (!DB.days[date]) DB.days[date] = { reha:{}, kraft:null, vals:{}, pain:null, note:"", morning:null };
+  return DB.days[date];
+}
+function doneCount(block, plan){
+  let done = 0, total = 0;
+  plan.ex.forEach(e => { if (e.optional) return; total += e.sets; done += (block[e.id]||[]).filter(Boolean).length; });
+  return { done, total };
+}
+function isComplete(block, plan){ const c = doneCount(block||{}, plan); return c.total > 0 && c.done >= c.total; }
+function hasAny(block){ return block && Object.values(block).some(a => (a||[]).some(Boolean)); }
+function kraftDays(){
+  return Object.keys(DB.days).filter(d => DB.days[d].kraft && hasAny(DB.days[d].kraft.sets)).sort();
+}
+function suggestion(date){
+  const ks = kraftDays().filter(d => d < date);
+  const last = ks[ks.length-1];
+  if (!last) return { type:"A", why:"Start mit Kraft A." };
+  const lastType = DB.days[last].kraft.type;
+  const next = lastType === "A" ? "B" : "A";
+  if (last === addDays(date,-1)) return { type:null, next, why:`Gestern war Kraft ${lastType} – heute nur Reha. Nächstes Mal: Kraft ${next}.` };
+  return { type: next, why:`Letztes Krafttraining: ${lastType} am ${fmt(last)}.` };
+}
+function painClass(p){ return p == null ? "" : p <= 3 ? "g" : p <= 5 ? "y" : "r"; }
+function painAdvice(p){
+  if (p == null) return "";
+  if (p <= 3) return "Grün: weitermachen. Steigern, wenn die Schulter am Morgen danach gut ist.";
+  if (p <= 5) return "Gelb: nächstes Mal leichter – weniger Gewicht, kleinerer Bewegungsumfang, langsamer.";
+  return "Rot: Übung stoppen. Ersatzübung oder Isometrie. Bleibt es so: Physio fragen.";
+}
+function lastVal(exId, before){
+  const ds = Object.keys(DB.days).filter(d => d < before && DB.days[d].vals && DB.days[d].vals[exId]).sort();
+  return ds.length ? DB.days[ds[ds.length-1]].vals[exId] : "";
+}
+function streak(){
+  let n = 0, d = TODAY();
+  if (!isComplete(DB.days[d]?.reha, PLAN.R)) d = addDays(d,-1);
+  while (DB.days[d] && isComplete(DB.days[d].reha, PLAN.R)) { n++; d = addDays(d,-1); }
+  return n;
+}
+
+/* ===================== Ansicht: Heute ===================== */
+let viewDate = TODAY();
+let kraftChoice = undefined; // undefined = Vorschlag verwenden
+
+function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+function renderToday(){
+  const date = viewDate, d = day(date), sug = suggestion(date);
+  const kType = d.kraft ? d.kraft.type : (kraftChoice !== undefined ? kraftChoice : sug.type);
+  document.getElementById("dateLine").textContent =
+    (date === TODAY() ? "Heute, " : "") + fmt(date) + " · Reha-Serie: " + streak() + " Tage";
+
+  let html = "";
+
+  // Morgen-Check für gestriges Krafttraining
+  const y = addDays(date,-1), yd = DB.days[y];
+  if (date === TODAY() && yd && yd.kraft && hasAny(yd.kraft.sets) && !yd.morning){
+    html += `<div class="banner"><b>Morgen-Check:</b> Wie fühlt sich die Schulter heute an – verglichen mit vor dem Training gestern?
+      <div class="row">
+        <button class="btn ghost" data-morning="besser">Besser</button>
+        <button class="btn ghost" data-morning="gleich">Gleich</button>
+        <button class="btn ghost" data-morning="schlechter">Schlechter</button>
+      </div></div>`;
+  }
+  if (yd && yd.morning === "schlechter" && date === TODAY()){
+    html += `<div class="advice r">Gestern war es danach schlechter: Heute eine Stufe leichter trainieren.</div>`;
+  }
+
+  // Datum wechseln
+  html += `<div class="row" style="margin-top:8px">
+    <button class="chip" data-nav="-1">‹ Vortag</button>
+    ${date !== TODAY() ? `<button class="chip" data-nav="today">Heute</button>` : ""}
+    ${date < TODAY() ? `<button class="chip" data-nav="1">Folgetag ›</button>` : ""}
+  </div>`;
+
+  // Reha
+  html += block("reha", PLAN.R, d.reha, d);
+
+  // Kraft-Auswahl
+  html += `<div class="card"><h2>Krafttraining</h2>
+    <div class="muted">${esc(sug.why)}</div>
+    <div class="tabs" style="margin-top:8px">
+      <button class="chip ${kType===null?"on":""}" data-ktype="none">Kein Kraft</button>
+      <button class="chip ${kType==="A"?"on":""}" data-ktype="A">A · Ziehen</button>
+      <button class="chip ${kType==="B"?"on":""}" data-ktype="B">B · Drücken</button>
+    </div></div>`;
+  if (kType){
+    const kb = d.kraft && d.kraft.type === kType ? d.kraft.sets : {};
+    html += block("kraft", PLAN[kType], kb, d, kType);
+  }
+
+  // Schmerz + Notiz
+  const pc = painClass(d.pain);
+  html += `<div class="card"><h2>Schmerz während dem Training</h2>
+    <div class="muted">Höchster Wert heute, 0 = keiner, 10 = maximal</div>
+    <div class="pain">${Array.from({length:11},(_,i)=>`<button data-pain="${i}" class="${d.pain===i?"on "+painClass(i):""}">${i}</button>`).join("")}</div>
+    ${d.pain!=null?`<div class="advice ${pc}">${painAdvice(d.pain)}</div>`:""}
+    <textarea id="note" placeholder="Notiz (z.B. was weh tat, Gewicht reduziert, Karate…)">${esc(d.note)}</textarea>
+  </div>`;
+
+  document.getElementById("view-today").innerHTML = html;
+}
+
+function block(kind, plan, sets, d, kType){
+  const c = doneCount(sets||{}, plan);
+  const pct = c.total ? Math.round(100*c.done/c.total) : 0;
+  let h = `<div class="card"><h2><span>${esc(plan.name)}</span><span class="muted">${c.done}/${c.total} Sätze</span></h2>
+    <div class="muted">${esc(plan.note)}</div><div class="prog"><div style="width:${pct}%"></div></div>`;
+  plan.ex.forEach(e => {
+    const arr = (sets||{})[e.id] || [];
+    const prev = e.input ? lastVal(e.id, viewDate) : "";
+    const cur = d.vals[e.id] ?? "";
+    h += `<div class="ex">
+      <div class="ex-head"><div class="ex-name">${esc(e.name)}${e.url?`<a href="${e.url}" target="_blank" rel="noopener">▶ Video</a>`:""}</div>
+      <div class="ex-dose">${esc(e.dose)}</div></div>
+      ${e.hint?`<div class="ex-hint">${esc(e.hint)}</div>`:""}
+      <div class="sets">${Array.from({length:e.sets},(_,i)=>`<button class="set ${arr[i]?"done":""}" data-kind="${kind}" data-ktype="${kType||""}" data-ex="${e.id}" data-i="${i}">${arr[i]?"✓":i+1}</button>`).join("")}
+      ${e.input?`<div class="inp"><input inputmode="decimal" data-val="${e.id}" value="${esc(cur)}" placeholder="${esc(prev||"")}"><label>${e.input==="reps"?"Wdh.":"kg"}${prev?`<br>zuletzt ${esc(prev)}`:""}</label></div>`:""}
+      </div></div>`;
+  });
+  return h + `</div>`;
+}
+
+/* ===================== Ansicht: Verlauf ===================== */
+function renderHistory(){
+  const today = TODAY();
+  const all = Object.keys(DB.days).sort();
+  const last28 = Array.from({length:28},(_,i)=>addDays(today, i-27));
+  const rehaDone = last28.filter(d => DB.days[d] && isComplete(DB.days[d].reha, PLAN.R)).length;
+  const kraft28 = last28.filter(d => DB.days[d] && DB.days[d].kraft && hasAny(DB.days[d].kraft.sets)).length;
+
+  // Kalender ab Montag ausrichten
+  const first = parse(last28[0]); const offset = (first.getDay()+6)%7;
+  let cal = ["Mo","Di","Mi","Do","Fr","Sa","So"].map(x=>`<div class="hd">${x}</div>`).join("");
+  cal += Array.from({length:offset},()=>`<div></div>`).join("");
+  last28.forEach(d => {
+    const r = DB.days[d];
+    const k = r && r.kraft && hasAny(r.kraft.sets);
+    const rh = r && hasAny(r.reha);
+    const p = r && r.pain != null ? `<span class="p" style="background:var(--${painClass(r.pain)==="g"?"good":painClass(r.pain)==="y"?"warn":"bad"})"></span>` : "";
+    cal += `<div class="d ${k?"k":rh?"r":""} ${d===today?"today":""}" title="${fmt(d)}">${p}${k?r.kraft.type:""} ${parse(d).getDate()}</div>`;
+  });
+
+  // Schmerzverlauf (letzte 28 Tage)
+  const pts = last28.map((d,i)=>({i, p: DB.days[d]?.pain})).filter(x=>x.p!=null);
+  const W=600,H=120,L=24,R=8,T=8,B=20;
+  const X=i=>L+(W-L-R)*i/27, Y=p=>T+(H-T-B)*(1-p/10);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Schmerzverlauf">
+    <rect x="${L}" y="${Y(3)}" width="${W-L-R}" height="${Y(0)-Y(3)}" fill="var(--good-soft)"/>
+    <rect x="${L}" y="${Y(5)}" width="${W-L-R}" height="${Y(3)-Y(5)}" fill="var(--warn-soft)"/>
+    <rect x="${L}" y="${Y(10)}" width="${W-L-R}" height="${Y(5)-Y(10)}" fill="var(--bad-soft)"/>
+    ${[0,3,5,10].map(v=>`<text x="${L-6}" y="${Y(v)+3}" text-anchor="end">${v}</text>`).join("")}
+    <text x="${L}" y="${H-4}">${fmt(last28[0])}</text><text x="${W-R}" y="${H-4}" text-anchor="end">heute</text>`;
+  if (pts.length > 1) svg += `<polyline fill="none" stroke="var(--accent)" stroke-width="2" points="${pts.map(x=>`${X(x.i)},${Y(x.p)}`).join(" ")}"/>`;
+  svg += pts.map(x=>`<circle cx="${X(x.i)}" cy="${Y(x.p)}" r="3.5" fill="var(--accent)"/>`).join("") + `</svg>`;
+
+  // Gewichte
+  const weighted = [...PLAN.A.ex, ...PLAN.B.ex].filter(e => e.input);
+  const rows = weighted.map(e => {
+    const ds = all.filter(d => DB.days[d].vals && DB.days[d].vals[e.id]);
+    if (!ds.length) return "";
+    const firstV = DB.days[ds[0]].vals[e.id], lastV = DB.days[ds[ds.length-1]].vals[e.id];
+    return `<tr><td>${esc(e.name)}</td><td>${esc(firstV)}</td><td><b>${esc(lastV)}</b></td><td class="muted">${fmt(ds[ds.length-1])}</td></tr>`;
+  }).join("");
+
+  // Protokoll
+  const log = all.slice().reverse().filter(d => hasAny(DB.days[d].reha) || (DB.days[d].kraft && hasAny(DB.days[d].kraft.sets)) || DB.days[d].pain!=null || DB.days[d].note).slice(0,30).map(d => {
+    const r = DB.days[d], pc = painClass(r.pain);
+    return `<div class="log-item"><b>${fmt(d)}</b>
+      ${hasAny(r.reha)?`<span class="tag">Reha ${doneCount(r.reha,PLAN.R).done}/${doneCount(r.reha,PLAN.R).total}</span>`:""}
+      ${r.kraft&&hasAny(r.kraft.sets)?`<span class="tag">Kraft ${r.kraft.type} ${doneCount(r.kraft.sets,PLAN[r.kraft.type]).done}/${doneCount(r.kraft.sets,PLAN[r.kraft.type]).total}</span>`:""}
+      ${r.pain!=null?`<span class="tag"><span class="dot" style="background:var(--${pc==="g"?"good":pc==="y"?"warn":"bad"})"></span>Schmerz ${r.pain}</span>`:""}
+      ${r.morning?`<span class="tag">Morgen danach: ${r.morning}</span>`:""}
+      ${r.note?`<div class="muted">${esc(r.note)}</div>`:""}
+      <div><button class="chip" style="margin-top:4px" data-open="${d}">Öffnen</button></div></div>`;
+  }).join("") || `<div class="muted">Noch keine Einträge.</div>`;
+
+  document.getElementById("view-history").innerHTML = `
+    <div class="card"><h2>Letzte 4 Wochen</h2>
+      <div class="stats">
+        <div class="stat"><b>${streak()}</b><span>Tage Reha in Folge</span></div>
+        <div class="stat"><b>${rehaDone}/28</b><span>Reha komplett</span></div>
+        <div class="stat"><b>${kraft28}</b><span>Krafttrainings</span></div>
+      </div>
+      <div class="cal">${cal}</div>
+      <div class="legend"><span style="--c:var(--accent-soft)">Reha</span><span style="--c:var(--good)">Kraft (A/B)</span><span style="--c:var(--warn)">Punkt = Schmerzwert</span></div>
+    </div>
+    <div class="card"><h2>Schmerzverlauf</h2>${pts.length?svg:`<div class="muted">Noch keine Schmerzwerte erfasst.</div>`}</div>
+    <div class="card"><h2>Gewichte &amp; Wiederholungen</h2>
+      ${rows?`<table><tr><th>Übung</th><th>Start</th><th>Aktuell</th><th>Zuletzt</th></tr>${rows}</table>`:`<div class="muted">Trag bei den Übungen kg bzw. Wiederholungen ein, dann siehst du hier den Fortschritt.</div>`}
+    </div>
+    <div class="card"><h2>Protokoll</h2>${log}</div>
+    <div class="card"><h2>Daten sichern</h2>
+      <div class="muted">Die Daten liegen nur in diesem Browser. Sichere sie ab und zu oder übertrage sie so auf ein anderes Gerät.</div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn" id="exportBtn">Exportieren</button>
+        <button class="btn ghost" id="importBtn">Importieren</button>
+        <input type="file" id="importFile" accept="application/json" class="hidden">
+      </div>
+    </div>`;
+}
+
+/* ===================== Ansicht: Regeln ===================== */
+function renderInfo(){
+  document.getElementById("view-info").innerHTML = `
+    <div class="card"><h2>Schmerzampel</h2>
+      <div class="advice g"><b>0–3:</b> weitermachen, normal steigern</div>
+      <div class="advice y"><b>4–5:</b> leichter – Gewicht, Bewegungsumfang, Tempo runter</div>
+      <div class="advice r"><b>6+ oder stechend:</b> Übung stoppen, Ersatz oder Isometrie</div>
+      <p class="muted">Ist es am nächsten Morgen schlimmer als vor dem Training, das nächste Training eine Stufe leichter.</p></div>
+    <div class="card"><h2>Rhythmus</h2><ul class="tight">
+      <li>Reha jeden Tag</li><li>Kraft jeden 2. Tag, A und B abwechselnd</li>
+      <li>Erste 2 Wochen leicht, Technik vor Gewicht</li>
+      <li>Nach 4–6 Wochen testen: Überkopfdrücken mit leichter Kurzhantel</li></ul></div>
+    <div class="card"><h2>Vorerst weglassen</h2><ul class="tight"><li>Dips</li><li>Überkopfdrücken</li><li>Schweres Seitheben</li></ul></div>
+    <div class="card"><h2>Karate</h2><ul class="tight">
+      <li>Schulter mit Band aufwärmen</li><li>Tsuki nicht hart bis zum Endanschlag</li>
+      <li>Age-uke und Techniken über Kopf zurückhaltend</li><li>Pratzen und Kontakt-Kumite vorerst mit weniger Kraft</li></ul></div>
+    <div class="card"><h2>Arzt/Physio bei</h2><ul class="tight">
+      <li>deutlicher Kraftlosigkeit</li><li>Schmerzen nach Sturz oder Schlag</li><li>starken Nachtschmerzen</li>
+      <li>Kribbeln oder Taubheit im Arm</li><li>keiner Besserung nach 6–8 Wochen</li></ul></div>`;
+}
+
+/* ===================== Events ===================== */
+function alertBox(msg){ const b = document.createElement("div"); b.className="advice r"; b.textContent=msg; document.querySelector("main").prepend(b); setTimeout(()=>b.remove(),4000); }
+
+document.addEventListener("click", ev => {
+  const t = ev.target.closest("button"); if (!t) return;
+  const d = day(viewDate);
+
+  if (t.dataset.view){
+    document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on", b===t));
+    ["today","history","info"].forEach(v=>document.getElementById("view-"+v).classList.toggle("hidden", v!==t.dataset.view));
+    if (t.dataset.view==="history") renderHistory();
+    if (t.dataset.view==="info") renderInfo();
+    if (t.dataset.view==="today") renderToday();
+    window.scrollTo(0,0); return;
+  }
+  if (t.dataset.nav){
+    viewDate = t.dataset.nav==="today" ? TODAY() : addDays(viewDate, Number(t.dataset.nav));
+    if (viewDate > TODAY()) viewDate = TODAY();
+    kraftChoice = undefined; renderToday(); return;
+  }
+  if (t.classList.contains("set")){
+    const i = Number(t.dataset.i), ex = t.dataset.ex;
+    let target;
+    if (t.dataset.kind==="reha") target = d.reha;
+    else {
+      const type = t.dataset.ktype;
+      if (!d.kraft || d.kraft.type !== type) d.kraft = { type, sets:{} };
+      target = d.kraft.sets;
+    }
+    target[ex] = target[ex] || [];
+    target[ex][i] = !target[ex][i];
+    save(); renderToday(); return;
+  }
+  if (t.dataset.ktype !== undefined && t.classList.contains("chip")){
+    const v = t.dataset.ktype === "none" ? null : t.dataset.ktype;
+    if (d.kraft && d.kraft.type !== v && hasAny(d.kraft.sets) && !confirm("Erfasste Kraft-Sätze von heute verwerfen?")) return;
+    if (!(d.kraft && d.kraft.type === v)) d.kraft = null;
+    kraftChoice = v; save(); renderToday(); return;
+  }
+  if (t.dataset.pain !== undefined){
+    const p = Number(t.dataset.pain); d.pain = d.pain === p ? null : p; save(); renderToday(); return;
+  }
+  if (t.dataset.morning){
+    day(addDays(TODAY(),-1)).morning = t.dataset.morning; save(); renderToday(); return;
+  }
+  if (t.dataset.open){
+    viewDate = t.dataset.open; kraftChoice = undefined;
+    document.querySelector('nav button[data-view="today"]').click(); return;
+  }
+  if (t.id==="exportBtn"){
+    const blob = new Blob([JSON.stringify(DB,null,1)], {type:"application/json"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+    a.download = `schultertraining-${TODAY()}.json`; a.click(); return;
+  }
+  if (t.id==="importBtn"){ document.getElementById("importFile").click(); return; }
+});
+
+document.addEventListener("input", ev => {
+  const t = ev.target;
+  if (t.dataset && t.dataset.val){ day(viewDate).vals[t.dataset.val] = t.value.trim(); save(); }
+  if (t.id === "note"){ day(viewDate).note = t.value; save(); }
+});
+
+document.addEventListener("change", ev => {
+  if (ev.target.id !== "importFile") return;
+  const f = ev.target.files[0]; if (!f) return;
+  f.text().then(txt => {
+    const data = JSON.parse(txt);
+    if (!data.days) throw new Error();
+    if (!confirm("Importierte Daten mit den vorhandenen zusammenführen? (Gleiche Tage werden überschrieben)")) return;
+    Object.assign(DB.days, data.days); save(); renderHistory();
+  }).catch(()=>alertBox("Datei konnte nicht gelesen werden."));
+});
+
+renderToday();
+</script>
+</body>
+</html>
